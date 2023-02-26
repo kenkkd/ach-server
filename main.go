@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,7 @@ import (
 	"github.com/kenkkd/ach-server/handler"
 	"github.com/kenkkd/ach-server/pkg/config"
 	"github.com/kenkkd/ach-server/pkg/ent"
+	"github.com/kenkkd/ach-server/pkg/mysql"
 )
 
 func init() {
@@ -17,16 +17,8 @@ func init() {
 }
 
 func main() {
-	mysqlConfig := config.ApplicationConfig.MySQL
-	dataSourceName := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True",
-		mysqlConfig.User, mysqlConfig.Password, mysqlConfig.Host, mysqlConfig.Port, mysqlConfig.Database)
-	client, err := ent.Open("mysql", dataSourceName)
-	if err != nil {
-		log.Fatalf("failed connecting to mysql: %v", err)
-	}
-	log.Println("success connecting to mysql")
-
+	var err error
+	client := mysql.NewClient()
 	defer func(client *ent.Client) {
 		err = client.Close()
 		if err != nil {
@@ -36,6 +28,7 @@ func main() {
 
 	router := gin.Default()
 
+	handler.ThreadHandler(router)
 	handler.HelloWorldHandler(router)
 
 	err = router.Run()
