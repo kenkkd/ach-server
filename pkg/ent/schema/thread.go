@@ -11,12 +11,11 @@ type Thread struct {
 }
 
 // Mixin of the Thread.
-// func (Anchor) Mixin() []ent.Mixin {
-// 	return []ent.Mixin{
-// 		TimeMixin{},
-// 		DeletedMixin{},
-// 	}
-// }
+func (Thread) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		TimeMixin{},
+	}
+}
 
 // Fields of the Thread.
 func (Thread) Fields() []ent.Field {
@@ -27,6 +26,5 @@ func (Thread) Fields() []ent.Field {
 
 // Edges of the Thread.
 func (Thread) Edges() []ent.Edge {
-	return []ent.Edge{
-	}
+	return []ent.Edge{}
 }
