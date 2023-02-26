@@ -3,13 +3,14 @@ module github.com/kenkkd/ach-server
 go 1.20
 
 require (
+	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb
 	entgo.io/ent v0.11.8
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-sql-driver/mysql v1.7.0
+	github.com/joho/godotenv v1.5.1
 )
 
 require (
-	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
