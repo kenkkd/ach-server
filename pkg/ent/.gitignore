@@ -2,4 +2,3 @@
 !/.gitignore
 !/schema
 !generate.go
-!migrate/migrations/*
