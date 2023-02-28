@@ -1,3 +1,5 @@
+include .env
+
 run:
 	docker compose up -d --build
 
@@ -17,4 +19,4 @@ migrate:
 	atlas migrate hash && \
 	atlas migrate apply \
       --dir "file://migrations" \
-      --url mysql://ach:root@mysql:3306/ach
+      --url mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
