@@ -10,6 +10,7 @@ RUN apk upgrade --update && \
 RUN go get -u github.com/cosmtrek/air && \
     go build -o /go/bin/air github.com/cosmtrek/air
 
-RUN go install ariga.io/atlas/cmd/atlas@master
+RUN go get -u ariga.io/atlas/cmd/atlas && \
+    go build -o /go/bin/atlas ariga.io/atlas/cmd/atlas
 
 CMD ["air", "-c", ".air.toml"]
