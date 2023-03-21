@@ -29,6 +29,7 @@ func main() {
 	router := gin.Default()
 
 	handler.ThreadHandler(router)
+	handler.ResponseHandler(router)
 	handler.HelloWorldHandler(router)
 
 	err = router.Run()

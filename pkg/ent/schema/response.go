@@ -7,27 +7,31 @@ import (
 )
 
 // Thread holds the schema definition for the Thread entity.
-type Thread struct {
+type Response struct {
 	ent.Schema
 }
 
 // Mixin of the Thread.
-func (Thread) Mixin() []ent.Mixin {
+func (Response) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		TimeMixin{},
 	}
 }
 
 // Fields of the Thread.
-func (Thread) Fields() []ent.Field {
+func (Response) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
+		field.Int("number"),
+		field.String("content"),
+		field.Int("thread_id"),
 	}
 }
 
 // Edges of the Thread.
-func (Thread) Edges() []ent.Edge {
+func (Response) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("responses",Response.Type),
+		edge.From("thread",Thread.Type).Ref("responses").Field("thread_id").
+		Unique().Required(),
 	}
 }
