@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kenkkd/ach-server/pkg/ent/response"
+	eResponse "github.com/kenkkd/ach-server/pkg/ent/response"
+	eThread "github.com/kenkkd/ach-server/pkg/ent/thread"
 	"github.com/kenkkd/ach-server/pkg/mysql"
 )
 
@@ -15,13 +15,48 @@ func ResponseHandler(router *gin.Engine) {
 	g.GET("",getResponses)
 }
 
-func createResponse(c *gin.Context){
+type CreateResponseParams struct {
+	Name string `json:"name"`
+	Content string `json:"content"`
+	ThreadID int `json:"threadId"`
+}
+
+func createResponse(c *gin.Context) {
 	ctx := c.Request.Context()
 	client := mysql.GetClient()
-	response,err := client.Response.Create().SetName("test").SetContent("test").SetThreadID(1).SetNumber(1).Save(ctx)
+	p := new(CreateResponseParams)
+
+	if err := c.ShouldBindJSON(&p); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	threadExist, err := client.Thread.Query().Where(
+		eThread.IDEQ(p.ThreadID),
+		eThread.DeletedAtIsNil(),
+	).Exist(ctx)
 	if err != nil {
-		log.Println(err)
-		panic(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !threadExist {
+		c.JSON(http.StatusNotFound, gin.H{"error": "thread not found"})
+		return
+	}
+
+	count, err := client.Response.Query().Where(eResponse.HasThreadWith(eThread.IDEQ(p.ThreadID))).Count(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	newNumber := count + 1
+
+	response, err := client.Response.Create().SetName(p.Name).SetContent(p.Content).
+		SetThreadID(p.ThreadID).SetNumber(newNumber).Save(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -31,7 +66,7 @@ func getResponses(c *gin.Context) {
 	ctx := c.Request.Context()
 	client := mysql.GetClient()
 
-	res, err := client.Response.Query().Where(response.DeletedAtIsNil()).All(ctx)
+	res, err := client.Response.Query().Where(eResponse.DeletedAtIsNil()).All(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
