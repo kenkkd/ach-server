@@ -8,6 +8,21 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
+// IDMixin ...
+type IDMixin struct {
+	mixin.Schema
+}
+
+// Fields of the IDMixin
+func (IDMixin) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").
+			Immutable().
+			NotEmpty().
+			Unique(),
+	}
+}
+
 // TimeMixin ..
 type TimeMixin struct {
 	mixin.Schema

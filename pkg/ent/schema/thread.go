@@ -14,6 +14,7 @@ type Thread struct {
 // Mixin of the Thread.
 func (Thread) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		IDMixin{},
 		TimeMixin{},
 	}
 }
@@ -21,13 +22,13 @@ func (Thread) Mixin() []ent.Mixin {
 // Fields of the Thread.
 func (Thread) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name"),
+		field.String("title"),
 	}
 }
 
 // Edges of the Thread.
 func (Thread) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("responses",Response.Type),
+		edge.To("responses", Response.Type),
 	}
 }

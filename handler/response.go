@@ -11,14 +11,26 @@ import (
 
 func ResponseHandler(router *gin.Engine) {
 	g := router.Group("/response")
-	g.POST("", createResponse)
 	g.GET("",getResponses)
+	g.POST("", createResponse)
 }
 
 type CreateResponseParams struct {
+	ThreadID string `json:"threadId"`
 	Name string `json:"name"`
 	Content string `json:"content"`
-	ThreadID int `json:"threadId"`
+}
+
+func getResponses(c *gin.Context) {
+	ctx := c.Request.Context()
+	client := mysql.GetClient()
+
+	res, err := client.Response.Query().Where(eResponse.DeletedAtIsNil()).All(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 func createResponse(c *gin.Context) {
@@ -52,24 +64,11 @@ func createResponse(c *gin.Context) {
 
 	newNumber := count + 1
 
-	response, err := client.Response.Create().SetName(p.Name).SetContent(p.Content).
-		SetThreadID(p.ThreadID).SetNumber(newNumber).Save(ctx)
+	response, err := client.Response.Create().SetThreadID(p.ThreadID).SetName(p.Name).SetContent(p.Content).SetNumber(newNumber).Save(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, response)
-}
-
-func getResponses(c *gin.Context) {
-	ctx := c.Request.Context()
-	client := mysql.GetClient()
-
-	res, err := client.Response.Query().Where(eResponse.DeletedAtIsNil()).All(ctx)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-	}
-
-	c.JSON(http.StatusOK, res)
 }

@@ -14,6 +14,7 @@ type Response struct {
 // Mixin of the Thread.
 func (Response) Mixin() []ent.Mixin {
 	return []ent.Mixin{
+		IDMixin{},
 		TimeMixin{},
 	}
 }
@@ -21,17 +22,20 @@ func (Response) Mixin() []ent.Mixin {
 // Fields of the Thread.
 func (Response) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("thread_id"),
 		field.String("name"),
 		field.Int("number"),
 		field.String("content"),
-		field.Int("thread_id"),
 	}
 }
 
 // Edges of the Thread.
 func (Response) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("thread",Thread.Type).Ref("responses").Field("thread_id").
-		Unique().Required(),
+		edge.From("thread",Thread.Type).
+			Ref("responses").
+			Field("thread_id").
+			Unique().
+			Required(),
 	}
 }
