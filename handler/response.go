@@ -11,14 +11,14 @@ import (
 
 func ResponseHandler(router *gin.Engine) {
 	g := router.Group("/response")
-	g.GET("",getResponses)
+	g.GET("", getResponses)
 	g.POST("", createResponse)
 }
 
 type CreateResponseParams struct {
 	ThreadID string `json:"threadId"`
-	Name string `json:"name"`
-	Content string `json:"content"`
+	Name     string `json:"name"`
+	Content  string `json:"content"`
 }
 
 func getResponses(c *gin.Context) {
